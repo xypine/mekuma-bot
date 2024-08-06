@@ -23,6 +23,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # /makkara command
 async def makkara(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id, text="Loading..."
+    )
     api_url = "https://makkara.fly.dev/api"
     response = requests.get(api_url)
     data = response.json()
