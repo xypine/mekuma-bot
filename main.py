@@ -23,9 +23,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # /makkara command
 async def makkara(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id, text="Loading..."
-    )
+    message_id = (
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id, text="Loading..."
+        )
+    ).id
     api_url = "https://makkara.fly.dev/api"
     response = requests.get(api_url)
     data = response.json()
@@ -40,18 +42,20 @@ async def makkara(update: Update, context: ContextTypes.DEFAULT_TYPE):
             break
 
     # format result based on multiple_days
-    if multiple_days == False:
+    if not multiple_days:
         for i in data:
             data_list.append(str(f"{i}  -  {data[i][0]}"))
             string = "\n".join(data_list)
         message = f"Meksikolaista uunimakkaraa on saatavilla näistä ravintoloista: \n{string} \n\n\nTieto on suuntaa antavaa, varmista Unicafen sivuilta meksikolaisen uunimakkaran saatavuus."
-    elif multiple_days == True:
+    else:
         for i in data:
             data_list.append(str(f"{i} {data[i]}"))
         message = f"Meksikolaista uunimakkaraa on saatavilla näistä ravintoloista: {data_list}"
 
     logging.warning(f"Got message from {update.effective_chat.username}")
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+    await context.bot.edit_message_text(
+        chat_id=update.effective_chat.id, message_id=message_id, text=message
+    )
 
 
 print("RUNNING")
